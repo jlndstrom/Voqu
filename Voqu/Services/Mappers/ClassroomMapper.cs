@@ -14,8 +14,7 @@ namespace Voqu.Services.Mappers
             {
                 Name = viewModel.Name,
                 Created = viewModel.Created,
-                VotedQuestions = viewModel.VotedQuestions,
-                AccessCode = viewModel.AccessCode
+                Voqus = viewModel.Voqus.Select((x) => new Voqu.Models.Voqu() { Id = x.Id, Question = x.Question, Votes = x.Votes }).ToList(),
             };
         }
 
@@ -25,8 +24,8 @@ namespace Voqu.Services.Mappers
             {
                 Name = model.Name,
                 Created = model.Created,
-                VotedQuestions = model.VotedQuestions,
-                AccessCode = model.AccessCode
+                Voqus = model.Voqus.Select((x) => new VoquViewModel() { Id = x.Id, Question = x.Question, Votes = x.Votes }).ToList(),
+                AccessCode = model.AccessCode.ToString()
             };
         }
     }

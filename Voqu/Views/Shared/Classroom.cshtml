@@ -5,15 +5,34 @@
 }
 
 <h1>@Model.Name</h1>
-<p>Access code: ....</p>
+<p>Access code: @Model.AccessCode</p>
 <ul>
     @Html.Partial("Voqus", Model)
 
-    @using (Html.BeginForm("CreateQuestion", "Classroom"))
+    @if (Model.RoleType == RoleTypes.Participant)
     {
-        @Html.TextBoxFor(m => m.NewQuestion)
-        <input type="submit" value="New Voqu" />
+        @using (Html.BeginForm("CreateQuestion", "Classroom"))
+        {
+            @Html.HiddenFor(m => m.AccessCode)
+            @Html.TextBoxFor(m => m.NewQuestion, new { @class = "col-3" })
+            <input type="submit" value="New Voqu" class="btn col-1"/>
+        }
     }
 
     @Html.HiddenFor(m => m.AccessCode)
-</ul> 
+</ul>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function ()
+        {
+            var updateFrequency = 10000;
+            setInterval(function() {
+            $.post('@Url.Action("UpdateVoqus", "Classroom", new { accessCode = Model.AccessCode + "" })').always(function (res)
+                {
+                    $('#voqus').html(res);
+                })
+            }, updateFrequency);
+        });
+    </script>
+}  

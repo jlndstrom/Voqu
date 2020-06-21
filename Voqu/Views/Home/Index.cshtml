@@ -4,20 +4,28 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <div>
-        @using (Html.BeginForm("CreateClassroom", "Home"))
-        {
-            @Html.TextBoxFor(m => m.NewClassroomName)
-            <input type="submit" value="Create" />
-        }
+    <div class="text-center">
+        <h1 class="display-4">Welcome to Voqu</h1>
+        <p>Create a new classroom or join an already existing one by entering the provided access code.</p>
+        <div class="col-12">
+            @using (Html.BeginForm("CreateClassroom", "Home"))
+            {
+                @Html.TextBoxFor(m => m.NewClassroomName, new { @class = "col-4" })
+                <input type="submit" value="Create" class="btn col-1" />
+            }
+        </div>
+        <div class="col-12">
+            @using (Html.BeginForm("JoinClassroom", "Home"))
+            {
+                @Html.TextBoxFor(m => m.ClassroomAccessCode, new { @class = "col-4" })
+                <input type="submit" value="Join" class="btn col-1" />
+            }
+            @if (Model != null && Model.ErrorMessage != null)
+            {
+            <div class="col-6 alert alert-primary alert-dismissible fade show">
+                <strong>Info!</strong> @Model.ErrorMessage
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+            }
+        </div>
     </div>
-    <div>
-        @using (Html.BeginForm("JoinClassroom", "Home"))
-        {
-            @Html.TextBoxFor(m => m.ClassroomAccessCode)
-            <input type="submit" value="Join" />
-        }
-    </div>
-</div>

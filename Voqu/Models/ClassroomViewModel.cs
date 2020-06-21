@@ -10,7 +10,7 @@ namespace Voqu.Models
         public DateTime Created { get; set; }
         public string Name { get; set; }
         public string AccessCode { get; set; }
-        public List<Voqu> VotedQuestions { get; set; }
+        public List<VoquViewModel> Voqus { get; set; }
         public RoleTypes RoleType { get; set; }
         public string NewQuestion { get; set; }
     }

@@ -8,11 +8,11 @@ namespace Voqu.Models
     public class Classroom : IMappable
     {
         public long Id { get; set; }
-        public String AccessCode { get; set; }
+        public long AccessCode { get; set; }
         public DateTime Created { get; set; }
         public bool Active { get; set; }
         public string Name { get; set; }
         public long Participants { get; set; }
-        public List<Voqu> VotedQuestions { get; set; }
+        public List<Voqu> Voqus { get; set; }
     }
 }

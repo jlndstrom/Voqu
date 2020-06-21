@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Voqu.Models;
 
-namespace Voqu.Services.Providers
+namespace Voqu.Services.Providers 
 {
     public class ClassroomProvider : IClassroomProvider
     {
@@ -15,7 +15,14 @@ namespace Voqu.Services.Providers
 
         public Classroom GetClassroomByAccessCode(string accessCode)
         {
-            return ActiveClassrooms.FirstOrDefault((x) => x.AccessCode == accessCode);
+            var parsedValue = 0l;
+
+            if(long.TryParse(accessCode, out parsedValue))
+            {
+                return ActiveClassrooms.FirstOrDefault((x) => x.AccessCode == parsedValue);
+            }
+            
+            return null;
         }
 
         public List<Classroom> ActiveClassrooms { get; set; }

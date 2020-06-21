@@ -34,9 +34,8 @@ namespace Voqu.Controllers
             var newClassroom = _classroomFactory.CreateClassroom(model.NewClassroomName);
 
             //Populate with testdata
-            newClassroom.VotedQuestions.Add(new Models.Voqu() { Question = "What color is a red firetruck?", Votes = 10, Id = 1 });
-            newClassroom.VotedQuestions.Add(new Models.Voqu() { Question = "What does the cow say?", Votes = 1, Id = 2 });
-            newClassroom.AccessCode = "aaa";
+            newClassroom.Voqus.Add(new Models.Voqu() { Question = "What color is a red firetruck?", Votes = 10, Id = 1 });
+            newClassroom.Voqus.Add(new Models.Voqu() { Question = "What does the cow say?", Votes = 1, Id = 2 });
 
             _classroomProvider.ActiveClassrooms.Add(newClassroom);
             var viewModel = _classroomMapper.Map(newClassroom);
@@ -47,24 +46,19 @@ namespace Voqu.Controllers
 
         public IActionResult JoinClassroom(HomeViewModel model)
         {
-            if(model.ClassroomAccessCode == null)
+            var requestedClassroom = _classroomProvider.GetClassroomByAccessCode(model.ClassroomAccessCode);
+
+            if (requestedClassroom == null)
             {
-                return Error();
+                model.ErrorMessage = "There is no active classroom with the given access code. Please try again.";
+                return View("Index", model);
             }
 
-            var requestedClassroom = _classroomProvider.GetClassroomByAccessCode(model.ClassroomAccessCode);
             var viewModel = _classroomMapper.Map(requestedClassroom);
 
             viewModel.RoleType = RoleTypes.Participant;
-
-            if(viewModel == null)
-            {
-                return Error();
-            }
-            else
-            {
-                return View("Classroom", viewModel);
-            }
+           
+            return View("Classroom", viewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

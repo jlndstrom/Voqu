@@ -7,7 +7,8 @@ namespace Voqu.Models
 {
     public class HomeViewModel
     {
-        public String NewClassroomName { get; set; }
-        public String ClassroomAccessCode { get; set; }
+        public string NewClassroomName { get; set; }
+        public string ClassroomAccessCode { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }
