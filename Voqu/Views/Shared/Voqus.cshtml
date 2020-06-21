@@ -1,0 +1,26 @@
+﻿@model ClassroomViewModel
+
+<div id="voqus">
+    @foreach (var voqu in Model.VotedQuestions)
+    {
+        <li>
+            @voqu.Id -  @voqu.Question (@voqu.Votes)
+            @Html.ActionLink("Vote" /* btn */, "Vote" /* act */, "Classroom" /* ctrl */, new { accessCode = Model.AccessCode, voquId = @voqu.Id }, new { @class = "btn" })
+        </li>
+    }
+
+    @Html.HiddenFor(m => m.AccessCode)
+</div>
+
+@section Scripts {
+    <script type="text/javascript" src="~/js/classroom.js" />
+    }
+    <script type="text/javascript">
+    $(function(){
+        setInterval(function() {
+            $.post('@Url.Action("UpdateVoqus", "Classroom")').always(function() {
+                $('"voqus').load('/Classroom/UpdateVoqus');
+            })
+        }, 30000);
+    });
+    </script>

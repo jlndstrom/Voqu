@@ -1,0 +1,23 @@
+﻿@model HomeViewModel;
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <div>
+        @using (Html.BeginForm("CreateClassroom", "Home"))
+        {
+            @Html.TextBoxFor(m => m.NewClassroomName)
+            <input type="submit" value="Create" />
+        }
+    </div>
+    <div>
+        @using (Html.BeginForm("JoinClassroom", "Home"))
+        {
+            @Html.TextBoxFor(m => m.ClassroomAccessCode)
+            <input type="submit" value="Join" />
+        }
+    </div>
+</div>

@@ -1,0 +1,19 @@
+﻿@model ClassroomViewModel;
+
+@{
+    ViewData["Title"] = "Classroom";
+}
+
+<h1>@Model.Name</h1>
+<p>Access code: ....</p>
+<ul>
+    @Html.Partial("Voqus", Model)
+
+    @using (Html.BeginForm("CreateQuestion", "Classroom"))
+    {
+        @Html.TextBoxFor(m => m.NewQuestion)
+        <input type="submit" value="New Voqu" />
+    }
+
+    @Html.HiddenFor(m => m.AccessCode)
+</ul> 
