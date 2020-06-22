@@ -28,10 +28,11 @@ namespace Voqu.Controllers
             return View("Classroom", model);
         }
 
-        public IActionResult UpdateVoqus(string accessCode)
+        public IActionResult UpdateVoqus(string accessCode, int roleType)
         {
             var currClassroom = _classroomProvider.GetClassroomByAccessCode(accessCode);
             var updatedViewModel = _classroomMapper.Map(currClassroom);
+            updatedViewModel.RoleType = (RoleTypes) roleType;
 
             SetupHasVotedOnVoqus(updatedViewModel);
 
@@ -56,6 +57,7 @@ namespace Voqu.Controllers
             }
 
             var updatedViewModel = _classroomMapper.Map(currClassroom);
+
             SetupHasVotedOnVoqus(updatedViewModel);
 
             return View("Classroom", updatedViewModel);

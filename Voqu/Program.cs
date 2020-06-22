@@ -11,9 +11,6 @@ namespace Voqu
 {
     public class Program
     {
-        // TODO: Should be controlled by database, just for testing purposes for now
-        public static int amtOfCurrSessions = 0;
-
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();

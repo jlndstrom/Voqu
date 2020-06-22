@@ -17,12 +17,8 @@ namespace Voqu.Services.Factories.ClassroomFactory
 
         public Classroom CreateClassroom(String name)
         {
-            // TODO: Should be controlled by database, just for testing purposes for now
-            Program.amtOfCurrSessions++;
-
             var newClassroom = new Classroom()
             {
-                Id = Program.amtOfCurrSessions,
                 Active = true,
                 Created = DateTime.Now,
                 Name = name,

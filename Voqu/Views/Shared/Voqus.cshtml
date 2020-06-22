@@ -1,16 +1,25 @@
 ﻿@model ClassroomViewModel
 
-<div id="voqus">
-    @foreach (var voqu in Model.Voqus)
-    {
-    <ul>
-        <p class="lead" style="display:inline">@voqu.Question</p> <p class="bold" style="display:inline">(@voqu.Votes ☝)</p>
-        @if (Model.RoleType == RoleTypes.Participant)
+    <div id="voqus">
+        @if (Model.Voqus.Count > 0)
         {
-            @Html.ActionLink(voqu.HasVoted ? "Downvote" : "Upvote", "Vote", "Classroom", new { accessCode = Model.AccessCode, voquId = @voqu.Id }, new { @class = "btn" })
+            @foreach (var voqu in Model.Voqus)
+            {
+                <ul>
+                    <p class="lead" style="display:inline">@voqu.Question</p>
+                    <p class="bold" style="display:inline">(@voqu.Votes ☝)</p>
+                    @if (Model.RoleType == RoleTypes.Participant)
+                    {
+                        @Html.ActionLink(voqu.HasVoted ? "Remove vote" : "Upvote", "Vote", "Classroom", new { accessCode = Model.AccessCode, voquId = @voqu.Id }, new { @class = "btn" })
+                    }
+                </ul>
+            }
         }
-    </ul>
-    }
+        else
+        {
+            <p>No voqus submitted yet ...</p>
+        }
 
-    @Html.HiddenFor(m => m.AccessCode)
-</div>
+
+        @Html.HiddenFor(m => m.AccessCode)
+    </div>

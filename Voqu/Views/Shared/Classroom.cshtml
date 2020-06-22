@@ -20,6 +20,7 @@
     }
 
     @Html.HiddenFor(m => m.AccessCode)
+    @Html.HiddenFor(m => m.RoleType)
 </ul>
 
 @section Scripts {
@@ -28,7 +29,7 @@
         {
             var updateFrequency = 10000;
             setInterval(function() {
-            $.post('@Url.Action("UpdateVoqus", "Classroom", new { accessCode = Model.AccessCode + "" })').always(function (res)
+            $.post('@Html.Raw(@Url.Action("UpdateVoqus", "Classroom", new { accessCode = Model.AccessCode + "", roleType = (int) Model.RoleType }))').always(function (res)
                 {
                     $('#voqus').html(res);
                 })

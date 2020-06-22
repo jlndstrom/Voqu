@@ -33,10 +33,6 @@ namespace Voqu.Controllers
         {
             var newClassroom = _classroomFactory.CreateClassroom(model.NewClassroomName);
 
-            //Populate with testdata
-            newClassroom.Voqus.Add(new Models.Voqu() { Question = "What color is a red firetruck?", Votes = 10, Id = 1 });
-            newClassroom.Voqus.Add(new Models.Voqu() { Question = "What does the cow say?", Votes = 1, Id = 2 });
-
             _classroomProvider.ActiveClassrooms.Add(newClassroom);
             var viewModel = _classroomMapper.Map(newClassroom);
             viewModel.RoleType = RoleTypes.Presenter;
