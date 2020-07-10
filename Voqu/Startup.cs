@@ -1,20 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Session;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Voqu.Models;
-using Voqu.Services.Factories.ClassroomFactory;
 using Voqu.Services.Mappers;
 using Voqu.Services.Providers;
+using Voqu.Services.Services;
 
 namespace Voqu
 {
@@ -31,9 +23,9 @@ namespace Voqu
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddSingleton<IClassroomFactory, ClassroomFactory>();
+            services.AddSingleton<IClassroomService, ClassroomService>();
             services.AddSingleton<IMapper<Classroom, ClassroomViewModel>, ClassroomMapper>();
-            services.AddSingleton<IClassroomProvider, ClassroomProvider>();
+            services.AddSingleton<IClassroomRepository, ClassroomRepository>();
             services.AddSession();
         }
 
@@ -64,6 +56,10 @@ namespace Voqu
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapControllerRoute(
+                    name: "classroom",
+                    pattern: "{controller=Classroom}/{action=Index}/{id?}");
             });
         }
     }

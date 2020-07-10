@@ -12,6 +12,6 @@ namespace Voqu.Models
         public string AccessCode { get; set; }
         public List<VoquViewModel> Voqus { get; set; }
         public RoleTypes RoleType { get; set; }
-        public string NewQuestion { get; set; }
+        public string Question { get; set; }
     }
 }

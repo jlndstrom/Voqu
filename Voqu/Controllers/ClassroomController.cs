@@ -1,84 +1,83 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Session;
+using System.IO.Compression;
+using System.Linq;
 using Voqu.Models;
 using Voqu.Services.Mappers;
-using Voqu.Services.Providers;
+using Voqu.Services.Services;
 
 namespace Voqu.Controllers
 {
     public class ClassroomController : Controller
     {
-        private readonly IClassroomProvider _classroomProvider;
+        private readonly IClassroomService _classroomService;
         private readonly IMapper<Classroom, ClassroomViewModel> _classroomMapper;
 
-
-        public ClassroomController(IClassroomProvider classroomProvider, IMapper<Classroom, ClassroomViewModel> classroomMapper)
+        public ClassroomController(IClassroomService classroomService, IMapper<Classroom, ClassroomViewModel> classroomMapper)
         {
-            _classroomProvider = classroomProvider;
+            _classroomService = classroomService;
             _classroomMapper = classroomMapper;
         }
 
-        public IActionResult Index(ClassroomViewModel model)
+        public IActionResult Index()
         {
-            return View("Classroom", model);
+            return View("Classroom");
         }
 
-        public IActionResult UpdateVoqus(string accessCode, int roleType)
+        public IActionResult Index(ClassroomViewModel viewModel)
         {
-            var currClassroom = _classroomProvider.GetClassroomByAccessCode(accessCode);
-            var updatedViewModel = _classroomMapper.Map(currClassroom);
-            updatedViewModel.RoleType = (RoleTypes) roleType;
+            return View("Classroom", viewModel);
+        }
 
-            SetupHasVotedOnVoqus(updatedViewModel);
+        public IActionResult UpdateVoqus(string accessCode)
+        {
+            var classroom = _classroomService.GetClassroom(accessCode);
+            var viewModel = SetupViewModel(classroom, getUserId());
 
-            return PartialView("Voqus", updatedViewModel);
+            return PartialView("Voqus", viewModel);
         }
 
         public IActionResult Vote(string accessCode, long voquId)
         {
-            var currClassroom = _classroomProvider.GetClassroomByAccessCode(accessCode);
-            var selectedVoqu = currClassroom.Voqus.FirstOrDefault(x => x.Id == voquId);
-            var sessionIdentifierForVoqu = "hasVotedOnVoqu_" + voquId;
+            var classroom = _classroomService.Vote(accessCode, voquId, getUserId());
+            var viewModel = SetupViewModel(classroom, getUserId());
 
-            if (HttpContext.Session.GetString(sessionIdentifierForVoqu) == "true")
-            {
-                selectedVoqu.Downvote();
-                HttpContext.Session.Remove(sessionIdentifierForVoqu);
-            }
-            else
-            {
-                selectedVoqu.Upvote();
-                HttpContext.Session.SetString(sessionIdentifierForVoqu, "true");
-            }
-
-            var updatedViewModel = _classroomMapper.Map(currClassroom);
-
-            SetupHasVotedOnVoqus(updatedViewModel);
-
-            return View("Classroom", updatedViewModel);
-        }
-
-        private void SetupHasVotedOnVoqus(ClassroomViewModel updatedModel)
-        {
-            updatedModel.Voqus.ForEach(x =>
-            {
-                x.HasVoted = (HttpContext.Session.GetString("hasVotedOnVoqu_" + x.Id) == "true");
-            });
+            return View("Classroom", viewModel);
         }
 
         public IActionResult CreateQuestion(ClassroomViewModel model)
         {
-            var currClassroom = _classroomProvider.GetClassroomByAccessCode(model.AccessCode);
-            currClassroom.Voqus.Add(new Models.Voqu() { Question = model.NewQuestion, Votes = 0, Id = currClassroom.Voqus.Count + 1 });
-            var updatedModel = _classroomMapper.Map(currClassroom);
-            updatedModel.NewQuestion = "";
+            var classroom = _classroomService.CreateQuestion(model.AccessCode, model.Question);
+            var viewModel = SetupViewModel(classroom, getUserId());
+            viewModel.Question = "";
 
-            return View("Classroom", updatedModel);
+            return View("Classroom", viewModel);
+        }
+
+        public IActionResult DeleteQuestion(string accessCode, long voquId)
+        {
+            var classroom = _classroomService.DeleteQuestion(accessCode, voquId);
+            var viewModel = SetupViewModel(classroom, getUserId());
+
+            return View("Classroom", viewModel);
+        }
+
+        private ClassroomViewModel SetupViewModel(Classroom currClassroom, string userId)
+        {
+            var viewModel = _classroomMapper.Map(currClassroom);
+
+            viewModel.Voqus.ForEach(x =>
+            {
+                x.Deletable = x.CreatedBy == userId || viewModel.RoleType == RoleTypes.Presenter;
+                x.HasVoted = x.Votes.Any(x => x.GivenBy == userId);
+            });
+
+            return viewModel;
+        }
+
+        private string getUserId()
+        {
+            return HttpContext.Session.GetString("userId");
         }
     }
 }

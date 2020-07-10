@@ -14,9 +14,14 @@
         @using (Html.BeginForm("CreateQuestion", "Classroom"))
         {
             @Html.HiddenFor(m => m.AccessCode)
-            @Html.TextBoxFor(m => m.NewQuestion, new { @class = "col-3" })
-            <input type="submit" value="New Voqu" class="btn col-1"/>
+            @Html.TextBoxFor(m => m.Question, new { @class = "col-3" })
+            <input type="submit" value="Submit Voqu" class="btn col-1" />
         }
+    }
+
+    @using (Html.BeginForm("CreateQuestion", "Classroom"))
+    {
+        <input type="submit" value="Download voqus" class="btn col-1" />
     }
 
     @Html.HiddenFor(m => m.AccessCode)
@@ -29,10 +34,10 @@
         {
             var updateFrequency = 10000;
             setInterval(function() {
-            $.post('@Html.Raw(@Url.Action("UpdateVoqus", "Classroom", new { accessCode = Model.AccessCode + "", roleType = (int) Model.RoleType }))').always(function (res)
-                {
-                    $('#voqus').html(res);
-                })
+                $.post('@Html.Raw(@Url.Action("UpdateVoqus", "Classroom", new { accessCode = Model.AccessCode + "" }))').always(function (res)
+                    {
+                        $('#voqus').html(res.Voqus);
+                    })
             }, updateFrequency);
         });
     </script>

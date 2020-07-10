@@ -7,7 +7,7 @@ namespace Voqu.Models
 {
     public class Classroom : IMappable
     {
-        public long Id { get; set; }
+        public string CreatedBy { get; set; }
         public long AccessCode { get; set; }
         public DateTime Created { get; set; }
         public bool Active { get; set; }

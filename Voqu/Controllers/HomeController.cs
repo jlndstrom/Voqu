@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Diagnostics;
 using Voqu.Models;
-using Voqu.Services.Factories.ClassroomFactory;
 using Voqu.Services.Mappers;
 using Voqu.Services.Providers;
 
@@ -12,16 +12,14 @@ namespace Voqu.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IClassroomFactory _classroomFactory;
+        private readonly IClassroomRepository _classroomRepository;
         private readonly IMapper<Classroom, ClassroomViewModel> _classroomMapper;
-        private readonly IClassroomProvider _classroomProvider;
 
-        public HomeController(ILogger<HomeController> logger, IClassroomFactory classroomFactory, IMapper<Classroom, ClassroomViewModel> classroomMapper, IClassroomProvider classroomProvider)
+        public HomeController(ILogger<HomeController> logger, IClassroomRepository classroomRepository, IMapper<Classroom, ClassroomViewModel> classroomMapper)
         {
             _logger = logger;
-            _classroomFactory = classroomFactory;
+            _classroomRepository = classroomRepository;
             _classroomMapper = classroomMapper;
-            _classroomProvider = classroomProvider;
         }
 
         public IActionResult Index()
@@ -31,36 +29,65 @@ namespace Voqu.Controllers
 
         public IActionResult CreateClassroom(HomeViewModel model)
         {
-            var newClassroom = _classroomFactory.CreateClassroom(model.NewClassroomName);
-
-            _classroomProvider.ActiveClassrooms.Add(newClassroom);
-            var viewModel = _classroomMapper.Map(newClassroom);
-            viewModel.RoleType = RoleTypes.Presenter;
+            var classroom = _classroomRepository.CreateClassroom(model.NewClassroomName, GetUserId());
+            var viewModel = SetupViewModel(GetUserId(), classroom);
 
             return View("Classroom", viewModel);
         }
 
         public IActionResult JoinClassroom(HomeViewModel model)
         {
-            var requestedClassroom = _classroomProvider.GetClassroomByAccessCode(model.ClassroomAccessCode);
+            string userId = GetUserId();
+            var classroom = _classroomRepository.GetClassroomByAccessCode(model.ClassroomAccessCode);
 
-            if (requestedClassroom == null)
+            if (classroom == null)
             {
                 model.ErrorMessage = "There is no active classroom with the given access code. Please try again.";
                 return View("Index", model);
             }
 
-            var viewModel = _classroomMapper.Map(requestedClassroom);
+            ClassroomViewModel viewModel = SetupViewModel(userId, classroom);
 
-            viewModel.RoleType = RoleTypes.Participant;
-           
             return View("Classroom", viewModel);
+        }
+
+        private ClassroomViewModel SetupViewModel(string userId, Classroom classroom)
+        {
+            var viewModel = _classroomMapper.Map(classroom);
+            viewModel.RoleType = SetRoleType(userId, classroom);
+
+            return viewModel;
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private string GetUserId()
+        {
+            var userId = HttpContext.Session.GetString("userId");
+
+            if (userId == null)
+            {
+                userId = new Guid().ToString();
+                HttpContext.Session.SetString("userId", userId);
+            }
+
+            return userId;
+        }
+
+        private RoleTypes SetRoleType(string currUserId, Classroom classroom)
+        {
+            if (currUserId == classroom.CreatedBy)
+            {
+                return RoleTypes.Presenter;
+            }
+            else
+            {
+                return RoleTypes.Participant;
+            }
         }
     }
 }
