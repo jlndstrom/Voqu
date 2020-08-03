@@ -71,7 +71,7 @@ namespace Voqu.Controllers
 
             if (userId == null)
             {
-                userId = new Guid().ToString();
+                userId = Guid.NewGuid().ToString();
                 HttpContext.Session.SetString("userId", userId);
             }
 

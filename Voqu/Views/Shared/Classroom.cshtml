@@ -19,9 +19,12 @@
         }
     }
 
-    @using (Html.BeginForm("CreateQuestion", "Classroom"))
+    @if (Model.Voqus.Count > 0)
     {
-        <input type="submit" value="Download voqus" class="btn col-1" />
+        @using (Html.BeginForm("CreateQuestion", "Classroom"))
+        {
+            <input type="submit" value="Download voqus" class="btn col-1" />
+        }
     }
 
     @Html.HiddenFor(m => m.AccessCode)
@@ -34,7 +37,7 @@
         {
             var updateFrequency = 10000;
             setInterval(function() {
-                $.post('@Html.Raw(@Url.Action("UpdateVoqus", "Classroom", new { accessCode = Model.AccessCode + "" }))').always(function (res)
+                $.post('@Html.Raw(@Url.Action("UpdateVoqus", "Classroom", new { accesssCode = Model.AccessCode + "" }))').always(function (res)
                     {
                         $('#voqus').html(res.Voqus);
                     })

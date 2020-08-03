@@ -11,12 +11,10 @@ namespace Voqu.Controllers
     public class ClassroomController : Controller
     {
         private readonly IClassroomService _classroomService;
-        private readonly IMapper<Classroom, ClassroomViewModel> _classroomMapper;
 
-        public ClassroomController(IClassroomService classroomService, IMapper<Classroom, ClassroomViewModel> classroomMapper)
+        public ClassroomController(IClassroomService classroomService)
         {
             _classroomService = classroomService;
-            _classroomMapper = classroomMapper;
         }
 
         public IActionResult Index()
@@ -29,53 +27,27 @@ namespace Voqu.Controllers
             return View("Classroom", viewModel);
         }
 
-        public IActionResult UpdateVoqus(string accessCode)
+        public IActionResult UpdateVoqus(string accesssCode)
         {
-            var classroom = _classroomService.GetClassroom(accessCode);
-            var viewModel = SetupViewModel(classroom, getUserId());
-
-            return PartialView("Voqus", viewModel);
+            return PartialView("Voqus", _classroomService.GetClassroom(accesssCode, GetUserId()));
         }
 
         public IActionResult Vote(string accessCode, long voquId)
         {
-            var classroom = _classroomService.Vote(accessCode, voquId, getUserId());
-            var viewModel = SetupViewModel(classroom, getUserId());
-
-            return View("Classroom", viewModel);
+            return View("Classroom", _classroomService.Vote(accessCode, voquId, GetUserId()));
         }
 
         public IActionResult CreateQuestion(ClassroomViewModel model)
         {
-            var classroom = _classroomService.CreateQuestion(model.AccessCode, model.Question);
-            var viewModel = SetupViewModel(classroom, getUserId());
-            viewModel.Question = "";
-
-            return View("Classroom", viewModel);
+            return View("Classroom", _classroomService.CreateQuestion(model.AccessCode, model.Question, GetUserId()));
         }
 
         public IActionResult DeleteQuestion(string accessCode, long voquId)
         {
-            var classroom = _classroomService.DeleteQuestion(accessCode, voquId);
-            var viewModel = SetupViewModel(classroom, getUserId());
-
-            return View("Classroom", viewModel);
+            return View("Classroom", _classroomService.DeleteQuestion(accessCode, voquId, GetUserId()));
         }
 
-        private ClassroomViewModel SetupViewModel(Classroom currClassroom, string userId)
-        {
-            var viewModel = _classroomMapper.Map(currClassroom);
-
-            viewModel.Voqus.ForEach(x =>
-            {
-                x.Deletable = x.CreatedBy == userId || viewModel.RoleType == RoleTypes.Presenter;
-                x.HasVoted = x.Votes.Any(x => x.GivenBy == userId);
-            });
-
-            return viewModel;
-        }
-
-        private string getUserId()
+        private string GetUserId()
         {
             return HttpContext.Session.GetString("userId");
         }

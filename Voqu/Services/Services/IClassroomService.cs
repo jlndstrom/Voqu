@@ -4,12 +4,12 @@ namespace Voqu.Services.Services
 {
     public interface IClassroomService
     {
-        Classroom CreateQuestion(string accessCode, string question);
+        ClassroomViewModel CreateQuestion(string accessCode, string question, string userId);
 
-        Classroom DeleteQuestion(string accessCode, long voquId);
+        ClassroomViewModel DeleteQuestion(string accessCode, long voquId, string userId);
 
-        Classroom GetClassroom(string accessCode);
+        ClassroomViewModel GetClassroom(string accessCode, string userId);
 
-        Classroom Vote(string accessCode, long voquId, string userId);
+        ClassroomViewModel Vote(string accessCode, long voquId, string userId);
     }
 }

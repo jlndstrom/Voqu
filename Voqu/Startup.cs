@@ -23,9 +23,9 @@ namespace Voqu
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddSingleton<IClassroomService, ClassroomService>();
             services.AddSingleton<IMapper<Classroom, ClassroomViewModel>, ClassroomMapper>();
             services.AddSingleton<IClassroomRepository, ClassroomRepository>();
+            services.AddSingleton<IClassroomService, ClassroomService>();
             services.AddSession();
         }
 
